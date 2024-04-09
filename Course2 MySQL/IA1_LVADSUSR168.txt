@@ -1,0 +1,59 @@
+
+
+1)SELECT CustomerID FROM customerinteractions 
+WHERE DataUsed>(SELECT AVG(DataUsed) FROM customerinteractions WHERE Month='March' AND Year=2024) AND Month='March' AND Year=2024;
+
+
+2)SELECT customerID, Month,SUM(CallDuration) FROM customerinteractions GROUP BY customerID, Month;
+
+#206 Customer
+
+
+
+
+3)SELECT CustomerID,Month,SUM(MessageCount),SUM(DataUsed) FROM customerinteractions GROUP BY CustomerID,Month;
+
+#206 Customer
+
+
+
+4)SELECT ProductTypeID,SUM(TotalSalesAmount) FROM quarterlysales GROUP BY ProductTypeID;
+SELECT ProductTypeID,SUM(TotalSalesAmount) FROM quarterlysales WHERE ProductTypeID=1 GROUP BY ProductTypeID;
+
+5)SELECT ProductTypeID,SUM(TotalSalesAmount) FROM quarterlysales 
+WHERE Quarter='Q1' AND Year=2024 GROUP BY ProductTypeID ORDER BY SUM(TotalSalesAmount) DESC LIMIT 1;
+
+
+6)SELECT (TotalSalesAmount/UnitsSold) AS Avg_sale_price FROM quarterlysales WHERE ProductTypeID=1 AND Quarter='Q2' AND Year=2024;
+#Assuming that totalsalesamount represents not one unit price but the price of all units of that product)
+
+7)SELECT Region,SUM(ConsumptionKWh) FROM sectorenergyconsumption 
+WHERE Month='March' AND Year=2024 GROUP BY Region HAVING SUM(ConsumptionKWh)>
+(SELECT AVG(ConsumptionKWh) FROM sectorenergyconsumption WHERE EnergySource='Solar' OR EnergySource='Wind');
+
+
+8)SELECT sector,Month,SUM(ConsumptionKWh) FROM sectorenergyconsumption GROUP BY sector,Month;
+
+#Residential
+
+
+9)SELECT EnergySource,SUM(ConsumptionKWh) FROM sectorenergyconsumption WHERE Month='February' AND Year=2024 GROUP BY EnergySource;
+
+
+
+
+10)SELECT CustomerName FROM insuranceactivities
+WHERE FeedbackScore>(SELECT AVG(FeedbackScore) FROM insuranceactivities) OR (SELECT AVG(ClaimsCount) FROM insuranceactivities)
+AND Investigation='No';
+
+
+11)SELECT SUM(AnnualPremium) FROM insuranceactivities
+WHERE FeedbackScore>(SELECT AVG(FeedbackScore) FROM insuranceactivities) AND Investigation='No';
+
+
+12)SELECT PolicyType,AVG(Feedbackscore),
+CASE
+ WHEN ClaimsCount>0 THEN "YES"
+ WHEN ClaimsCount=0 THEN "NO"
+ END AS Claimhistory
+FROM insuranceactivities GROUP BY PolicyType;
