@@ -1,0 +1,182 @@
+
+1)SELECT p.product_category,AVG(sales_amount)
+FROM Sales_Records AS s
+INNER JOIN products AS p
+ON s.product_id = p.product_id
+WHERE sales_date>DATE_SUB(CURRENT_DATE(),INTERVAL 1 MONTH)
+GROUP BY p.product_category;
+
+
+2)SELECT product_id,SUM(sales_amount) AS product_revenue FROM sales_records
+WHERE YEAR(sales_date)=YEAR(current_date())
+GROUP BY product_id
+ORDER BY product_revenue DESC
+LIMIT 3;
+
+
+3)SET @total_sales = (SELECT SUM(sales_amount) FROM sales_records);
+SELECT *,((customer_total_sales)/(@total_sales))*100 AS percent FROM 
+(SELECT s.customer_id,c.customer_name,SUM(sales_amount) AS customer_total_sales FROM sales_records AS s
+INNER JOIN customers AS c
+ON s.customer_id=c.customer_id
+GROUP BY s.customer_id,c.customer_name) AS new_table;
+
+
+4)SELECT customer_id,
+CASE 
+WHEN COUNT(MONTH(sales_date)) IN (4,5,6) THEN "Consistent Buyers"
+ELSE "Occasional Buyers" 
+END AS buying_behavior
+FROM sales_records
+GROUP BY customer_id;
+
+
+5)SELECT departure_airport,arrival_airport, AVG(base_price) AS avg_ticket_price FROM flights
+GROUP BY departure_airport,arrival_airport;
+
+6)SELECT f.flight_number,f.departure_date,new_tab.total_tickets_sold
+FROM
+(SELECT flight_id,COUNT(flight_id) AS total_tickets_sold 
+FROM tickets AS t
+GROUP BY flight_id) AS new_tab
+INNER JOIN Flights AS f
+ON f.flight_id = new_tab.flight_id;
+
+
+7)SELECT p.passenger_name,new_table.total_amount_spent,p.frequent_flyer_status
+FROM 
+(SELECT passenger_id,SUM(ticket_price) AS total_amount_spent 
+FROM tickets
+GROUP BY passenger_id
+ORDER BY SUM(ticket_price) DESC
+LIMIT 5) AS new_table
+INNER JOIN passengers AS p
+ON new_table.passenger_id=p.passenger_id
+ORDER BY total_amount_spent DESC;
+
+
+8)SELECT MONTH(ticket_date) AS Month,COUNT(MONTH(ticket_date)) AS tickets_sold
+FROM tickets 
+GROUP BY MONTH(ticket_date)
+ORDER BY tickets_sold DESC
+LIMIT 1;
+
+9)SELECT new_table.player_id,new_table.game_id,AVG(new_table.days)
+FROM
+(SELECT ps.player_id,ps.game_id,DATEDIFF(ps.play_date,p.registration_date) AS days
+FROM playerscores AS ps
+INNER JOIN players AS p
+ON ps.player_id=p.player_id) AS new_table
+GROUP BY ps.player_id,game_id;
+
+
+
+
+
+
+10)SELECT new_table.game_id,games.game_name,new_table.game_total_players
+FROM 
+(SELECT game_id,COUNT(game_id) AS game_total_players
+FROM PlayerScores
+GROUP BY game_id
+ORDER BY game_total_players DESC
+LIMIT 3) new_table
+INNER JOIN games 
+ON games.game_id=new_table.game_id
+ORDER BY new_table.game_total_players DESC;
+
+
+
+11)SELECT game_id,AVG(score),MAX(score),COUNT(game_id) AS game_total_players
+FROM playerscores
+GROUP BY game_id;
+
+
+
+12)SELECT DISTINCT player_id FROM playerscores WHERE player_id NOT IN (SELECT player_id FROM playerscores 
+WHERE play_date>DATE_SUB(current_date(), INTERVAL 1 MONTH)) AND play_date<DATE_SUB(current_date(), INTERVAL 1 MONTH);
+
+
+
+13)SELECT doctor_id,SUM(cost) AS total_cost FROM treatments
+GROUP BY doctor_id
+ORDER BY total_cost DESC LIMIT 5;
+
+
+14)SET @total_cost = (SELECT SUM(cost) FROM treatments);
+SELECT treatment_name,SUM(cost) AS treatment_total_cost, (SUM(COST)/@total_cost)*100 AS cost_percent
+FROM treatments 
+GROUP BY treatment_name;
+
+
+
+15)NA
+
+
+
+
+16)SELECT gender,diagnosis,ROUND(AVG(DATEDIFF(discharge_date,admission_date))) AS Avg_LOS
+FROM patients
+GROUP BY gender,diagnosis;
+
+
+
+17)SELECT c.department,e.semester,AVG(e.grade)
+FROM enrollments AS e
+INNER JOIN courses AS c
+ON c.course_id=e.course_id
+GROUP BY e.semester,c.department
+ORDER BY c.department,e.semester;
+
+
+
+
+18)SELECT c.department,COUNT(c.department) AS stu_enrolled
+FROM enrollments AS e
+INNER JOIN courses AS c
+ON e.course_id=c.course_id
+GROUP BY c.department
+ORDER BY stu_enrolled DESC
+
+
+19)SELECT e.student_id,s.student_name,e.semester,SUM(c.credits)
+FROM enrollments AS e
+INNER JOIN courses AS c
+ON e.course_id=c.course_id 
+INNER JOIN students AS s
+ON s.student_id=e.student_id
+GROUP BY e.student_id,e.semester,s.student_name
+HAVING SUM(c.credits)>=50;
+
+
+
+20)SELECT s.enrollment_year,e.course_id,COUNT(e.course_id) AS total_students_enrolled
+FROM enrollments AS e
+INNER JOIN students AS s
+GROUP BY s.enrollment_year,e.course_id
+ORDER BY enrollment_year,total_students_enrolled DESC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
